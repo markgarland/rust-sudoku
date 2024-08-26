@@ -1,17 +1,22 @@
+use crate::step::Step;
 
 #[derive(Debug)]
 pub struct Grid {
-     grid: Vec<Cell>,
+     grid: Vec<Vec<Cell>>,
      size: u8
 }
 
 impl Grid {
     pub fn new(size: u8) -> Self {
         let mut grid = Vec::new();
-        for i in 0..size.pow(4) {
-            grid.push (
-                Cell {grid_index: i+1, potential_values: (1..=size.pow(2)).collect()}
-            )
+        for i in 0..size.pow(2) {
+            let mut column = Vec::new();
+            for j in 0..size.pow(2) {
+                column.push(
+                    Cell { row: i, column: j, subgrid: (i / size, j / size), potential_values: (1..=size.pow(2)).collect() }
+                )
+            }
+            grid.push(column);
         }
 
         Self {
@@ -19,37 +24,74 @@ impl Grid {
         }
     }
 
-    pub fn load_data(&mut self, data: [Option<u8>; 16]) {
-        for i in 0..data.len() {
-            match data[i] {
-                Some(v) => self.grid[i].set_value(v),
-                _ => {}
-            }
-        }
+    pub fn is_solved(&self) -> bool {
+        let solved = self.grid.iter().flatten().all(|cell| cell.get_value().is_some());
+        println!("Is Solved: {}", solved);
+        solved
     }
 
-    pub fn get_rows(&self) -> Vec<Vec<&Cell>> {
-        self.grid.chunks(self.size.pow(2) as usize).map(|x| x.into_iter().collect()).collect()
+    pub fn add_data(&mut self, step: &Step) {
+        let row = &mut self.grid[step.row as usize];
+        let cell = &mut row[step.column as usize];
+        cell.set_value(step.value);
+
+
+        // let x = self.grid[step.row as usize][step.column as usize];
+        // self.grid.into_iter().flatten().filter(|cell| cell.row == self.grid[step.row as usize][step.column as usize].row);
+        // self.grid.iter().flatten().filter(|cell| cell.row == cell_being_updated.row)
+
+        // for cell in self.grid.iter().flatten().collect().filt {
+        //     cell.remove_value(step.value);
+        // }
+
+        // for mut cell in self.grid.into_iter().flatten().filter(|cell| cell.row == cell_being_updated.row).into_iter() {
+        //     cell.remove_value(step.value);
+        // }
+
+        // for mut cell in &self.grid.iter().flatten().filter(|cell| cell.column == cell_being_updated.column) {
+        //     cell.remove_value(step.value);
+        // }
+        //
+        // for mut cell in &self.grid.iter().flatten().filter(|cell| cell.subgrid == cell_being_updated.subgrid) {
+        //     cell.remove_value(step.value);
+        // }
+            ()
     }
 
-    pub fn get_columns(&self) -> Vec<Vec<&Cell>> {
-        let mut result: Vec<Vec<&Cell>> = Vec::new();
-        for i in 1..=self.size.pow(2) {
-            let mut result_item : Vec<&Cell> = Vec::new();
-            for j in (i as usize..=self.grid.len() as usize).step_by(self.size.pow(2) as usize) {
-                result_item.push(&self.grid[j-1]);
-            }
-            result.push(result_item);
-        }
-        result
-    }
+
+    // pub fn load_data(&mut self, data: [Option<u8>; 16]) {
+    //     for i in 0..data.len() {
+    //         match data[i] {
+    //             Some(v) => self.grid[i].set_value(v),
+    //             _ => {}
+    //         }
+    //     }
+    // }
+    //
+    // pub fn get_rows(&self) -> Vec<Vec<&Cell>> {
+    //     self.grid.chunks(self.size.pow(2) as usize).map(|x| x.into_iter().collect()).collect()
+    // }
+    //
+    // pub fn get_columns(&self) -> Vec<Vec<&Cell>> {
+    //     let mut result: Vec<Vec<&Cell>> = Vec::new();
+    //     for i in 1..=self.size.pow(2) {
+    //         let mut result_item : Vec<&Cell> = Vec::new();
+    //         for j in (i as usize..=self.grid.len() as usize).step_by(self.size.pow(2) as usize) {
+    //             result_item.push(&self.grid[j-1]);
+    //         }
+    //         result.push(result_item);
+    //     }
+    //     result
+    // }
 
 }
 
 #[derive(Debug)]
 pub struct Cell {
-    pub grid_index: u8,
-    pub potential_values: Vec<u8>
+    pub row: u8,
+    pub column: u8,
+    pub subgrid: (u8,u8),
+    pub potential_values: Vec<u8>,
 }
 
 impl Cell {
