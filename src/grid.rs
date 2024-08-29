@@ -31,22 +31,15 @@ impl Grid {
     }
 
     pub fn add_data(&mut self, step: &Step) {
-        let row = &mut self.grid[step.row as usize];
-        let cell = &mut row[step.column as usize];
-        cell.set_value(step.value);
+        // let row = &mut self.grid[step.row as usize];
+        // let cell = &mut row[step.column as usize];
+        // cell.set_value(step.value);
 
+        self.grid[step.row as usize][step.column as usize].remove_value(step.value);
 
-        // let x = self.grid[step.row as usize][step.column as usize];
-        // self.grid.into_iter().flatten().filter(|cell| cell.row == self.grid[step.row as usize][step.column as usize].row);
-        // self.grid.iter().flatten().filter(|cell| cell.row == cell_being_updated.row)
-
-        // for cell in self.grid.iter().flatten().collect().filt {
-        //     cell.remove_value(step.value);
-        // }
-
-        // for mut cell in self.grid.into_iter().flatten().filter(|cell| cell.row == cell_being_updated.row).into_iter() {
-        //     cell.remove_value(step.value);
-        // }
+        for mut cell in self.grid.into_iter().flatten().filter(|cell| cell.row == cell.row).into_iter() {
+            cell.remove_value(step.value);
+        }
 
         // for mut cell in &self.grid.iter().flatten().filter(|cell| cell.column == cell_being_updated.column) {
         //     cell.remove_value(step.value);
@@ -57,33 +50,6 @@ impl Grid {
         // }
             ()
     }
-
-
-    // pub fn load_data(&mut self, data: [Option<u8>; 16]) {
-    //     for i in 0..data.len() {
-    //         match data[i] {
-    //             Some(v) => self.grid[i].set_value(v),
-    //             _ => {}
-    //         }
-    //     }
-    // }
-    //
-    // pub fn get_rows(&self) -> Vec<Vec<&Cell>> {
-    //     self.grid.chunks(self.size.pow(2) as usize).map(|x| x.into_iter().collect()).collect()
-    // }
-    //
-    // pub fn get_columns(&self) -> Vec<Vec<&Cell>> {
-    //     let mut result: Vec<Vec<&Cell>> = Vec::new();
-    //     for i in 1..=self.size.pow(2) {
-    //         let mut result_item : Vec<&Cell> = Vec::new();
-    //         for j in (i as usize..=self.grid.len() as usize).step_by(self.size.pow(2) as usize) {
-    //             result_item.push(&self.grid[j-1]);
-    //         }
-    //         result.push(result_item);
-    //     }
-    //     result
-    // }
-
 }
 
 #[derive(Debug)]
